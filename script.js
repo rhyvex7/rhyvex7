@@ -11,6 +11,11 @@ const nameText = document.getElementById('nameText');
 const usernameText = document.getElementById('usernameText');
 const bioText = document.getElementById('bioText');
 
+// ===== NOVO: CONTADOR E CONTROLES =====
+const viewCount = document.getElementById('viewCount');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const volumeSlider = document.getElementById('volumeSlider');
+
 // =============================================
 // 2. CONFIGURAÇÃO
 // =============================================
@@ -342,6 +347,9 @@ enterScreen.addEventListener('click', function(e) {
     music.volume = 0.3;
     music.play().catch(() => {});
     this.classList.add('hide');
+    
+    // ===== NOVO: Atualiza contador ao entrar =====
+    updateViewCount();
 });
 
 // =============================================
@@ -394,3 +402,62 @@ setInterval(() => {
 console.log('🔥 CHUVA BRANCA ATIVADA!');
 console.log('❄️ PARTÍCULAS MINÚSCULAS');
 console.log('💀 TUDO SUTIL E FODA');
+
+// =============================================
+// ===== NOVO: CONTADOR DE VISUALIZAÇÕES =====
+// =============================================
+function getViewCount() {
+    let count = localStorage.getItem('rhyvexViews');
+    if (count === null) {
+        count = 0;
+    } else {
+        count = parseInt(count);
+    }
+    return count;
+}
+
+function updateViewCount() {
+    let count = getViewCount();
+    count++;
+    localStorage.setItem('rhyvexViews', count.toString());
+    viewCount.textContent = count;
+}
+
+// Mostra o contador atual ao carregar
+viewCount.textContent = getViewCount();
+
+// =============================================
+// ===== NOVO: CONTROLE DE MÚSICA =====
+// =============================================
+
+// Play/Pause
+playPauseBtn.addEventListener('click', () => {
+    if (music.paused) {
+        music.play().catch(() => {});
+        playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        isMusicPlaying = true;
+    } else {
+        music.pause();
+        playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+        isMusicPlaying = false;
+    }
+});
+
+// Volume
+volumeSlider.addEventListener('input', () => {
+    music.volume = parseFloat(volumeSlider.value);
+});
+
+// Atualiza ícone do play/pause quando a música termina ou é carregada
+music.addEventListener('play', () => {
+    playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    isMusicPlaying = true;
+});
+
+music.addEventListener('pause', () => {
+    playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+    isMusicPlaying = false;
+});
+
+// Sincroniza o volume inicial
+music.volume = parseFloat(volumeSlider.value);
