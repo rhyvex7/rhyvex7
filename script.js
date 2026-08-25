@@ -11,7 +11,7 @@ const nameText = document.getElementById('nameText');
 const usernameText = document.getElementById('usernameText');
 const bioText = document.getElementById('bioText');
 
-// ===== NOVO: CONTADOR E CONTROLES =====
+// ===== CONTADOR E CONTROLES =====
 const viewCount = document.getElementById('viewCount');
 const playPauseBtn = document.getElementById('playPauseBtn');
 const volumeSlider = document.getElementById('volumeSlider');
@@ -39,7 +39,7 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 // =============================================
-// 3. CORES - BRANCO E AZUL SUTIL
+// 3. CORES - BRANCO
 // =============================================
 const colorPalette = [
     'rgba(255, 255, 255, ',
@@ -94,7 +94,6 @@ class Raindrop {
     }
 
     draw() {
-        // Gota branca
         ctx.beginPath();
         ctx.moveTo(this.x, this.y);
         ctx.lineTo(this.x + 1, this.y + this.length);
@@ -106,7 +105,6 @@ class Raindrop {
         ctx.stroke();
         ctx.shadowBlur = 0;
 
-        // Brilho branco no topo (sutil)
         if (Math.random() < 0.02) {
             ctx.beginPath();
             ctx.arc(this.x, this.y, 0.8, 0, Math.PI * 2);
@@ -211,7 +209,6 @@ function animate() {
         particle.draw();
     }
 
-    // Conexões sutis
     for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
             const dx = particles[i].x - particles[j].x;
@@ -286,7 +283,6 @@ animateBox();
 // 9. INTERAÇÕES COM NOMES
 // =============================================
 
-// Nome
 nameText.addEventListener('mouseenter', () => {
     for (let i = 0; i < 6; i++) {
         const p = new Particle();
@@ -304,7 +300,6 @@ nameText.addEventListener('mouseenter', () => {
     }
 });
 
-// Username
 usernameText.addEventListener('mouseenter', () => {
     for (let i = 0; i < 4; i++) {
         const p = new Particle();
@@ -322,7 +317,6 @@ usernameText.addEventListener('mouseenter', () => {
     }
 });
 
-// Bio
 bioText.addEventListener('mouseenter', () => {
     for (let i = 0; i < 5; i++) {
         const p = new Particle();
@@ -343,13 +337,19 @@ bioText.addEventListener('mouseenter', () => {
 // =============================================
 // 10. ENTRAR
 // =============================================
+let hasEntered = false;
+
 enterScreen.addEventListener('click', function(e) {
-    music.volume = 0.3;
+    // Toca música
+    music.volume = parseFloat(volumeSlider.value);
     music.play().catch(() => {});
     this.classList.add('hide');
     
-    // ===== NOVO: Atualiza contador ao entrar =====
-    updateViewCount();
+    // ===== SÓ ATUALIZA O CONTADOR UMA VEZ =====
+    if (!hasEntered) {
+        hasEntered = true;
+        updateViewCount();
+    }
 });
 
 // =============================================
@@ -404,51 +404,82 @@ console.log('❄️ PARTÍCULAS MINÚSCULAS');
 console.log('💀 TUDO SUTIL E FODA');
 
 // =============================================
-// ===== NOVO: CONTADOR DE VISUALIZAÇÕES =====
+// ===== CONTADOR DE VISUALIZAÇÕES =====
 // =============================================
 function getViewCount() {
-    let count = localStorage.getItem('rhyvexViews');
-    if (count === null) {
-        count = 0;
-    } else {
-        count = parseInt(count);
+    try {
+        let count = localStorage.getItem('rhyvexViews');
+        if (count === null) {
+            count = 0;
+        } else {
+            count = parseInt(count);
+        }
+        return count;
+    } catch (e) {
+        // Se der erro (navegador sem suporte), retorna 0
+        return 0;
     }
-    return count;
 }
 
 function updateViewCount() {
-    let count = getViewCount();
-    count++;
-    localStorage.setItem('rhyvexViews', count.toString());
-    viewCount.textContent = count;
+    try {
+        let count = getViewCount();
+        count++;
+        localStorage.setItem('rhyvexViews', count.toString());
+        viewCount.textContent = count;
+    } catch (e) {
+        // Se der erro, só mostra 0
+        viewCount.textContent = '0';
+    }
 }
 
 // Mostra o contador atual ao carregar
-viewCount.textContent = getViewCount();
+try {
+    viewCount.textContent = getViewCount();
+} catch (e) {
+    viewCount.textContent = '0';
+}
 
 // =============================================
-// ===== NOVO: CONTROLE DE MÚSICA =====
+// ===== CONTROLE DE MÚSICA =====
 // =============================================
 
 // Play/Pause
-playPauseBtn.addEventListener('click', () => {
+playPauseBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
     if (music.paused) {
         music.play().catch(() => {});
-        playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        this.innerHTML = '<i class="fa-solid fa-pause"></i>';
         isMusicPlaying = true;
     } else {
         music.pause();
-        playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+        this.innerHTML = '<i class="fa-solid fa-play"></i>';
         isMusicPlaying = false;
     }
 });
 
 // Volume
-volumeSlider.addEventListener('input', () => {
-    music.volume = parseFloat(volumeSlider.value);
+volumeSlider.addEventListener('input', function(e) {
+    e.stopPropagation();
+    const vol = parseFloat(this.value);
+    music.volume = vol;
+    // Salva o volume no localStorage pra sincronizar
+    try {
+        localStorage.setItem('rhyvexVolume', vol.toString());
+    } catch (e) {}
 });
 
-// Atualiza ícone do play/pause quando a música termina ou é carregada
+// Carrega o volume salvo
+try {
+    const savedVolume = localStorage.getItem('rhyvexVolume');
+    if (savedVolume !== null) {
+        const vol = parseFloat(savedVolume);
+        music.volume = vol;
+        volumeSlider.value = vol;
+    }
+} catch (e) {}
+
+// Atualiza ícone do play/pause
 music.addEventListener('play', () => {
     playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
     isMusicPlaying = true;
@@ -459,5 +490,17 @@ music.addEventListener('pause', () => {
     isMusicPlaying = false;
 });
 
-// Sincroniza o volume inicial
-music.volume = parseFloat(volumeSlider.value);
+// =============================================
+// ===== FIX: GARANTE QUE O VOLUME FUNCIONA =====
+// =============================================
+// Força o volume quando a música carrega
+music.addEventListener('loadedmetadata', () => {
+    try {
+        const savedVolume = localStorage.getItem('rhyvexVolume');
+        if (savedVolume !== null) {
+            const vol = parseFloat(savedVolume);
+            music.volume = vol;
+            volumeSlider.value = vol;
+        }
+    } catch (e) {}
+});
