@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rhyvex</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <div class="background">
+        <div class="noise"></div>
+        <canvas id="particleCanvas"></canvas>
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+    </div>
+
+    <div id="enterScreen">
+        <div class="enter-content">
+            <div class="enter-line"></div>
+            <p class="enter-small">WELCOME</p>
+            <h1>enter my world</h1>
+            <div class="enter-glow-ring"></div>
+            <p class="enter-hint">▸ click anywhere ▸</p>
+            <div class="enter-line"></div>
+        </div>
+    </div>
+
+    <audio id="music" loop>
+        <!-- OPÇÃO 1: Se a música estiver na pasta "msc" -->
+        <source src="msc/The Lost Soul Down - Slowed & Reverb_spotdown.org.mp3" type="audio/mpeg">
+        <!-- OPÇÃO 2: Se a música estiver na mesma pasta (renomeada pra music.mp3) -->
+        <!-- <source src="music.mp3" type="audio/mpeg"> -->
+    </audio>
+
+    <main class="profile-card" id="profileCard">
+        <div class="card-glow-border"></div>
+        
+        <div class="profile-image" id="profileImage">
+            <img src="img/img.jpg" alt="Profile" id="profileImg">
+            <div class="online">
+                <span class="pulse-ring"></span>
+            </div>
+        </div>
+
+        <h1 class="name" id="nameText">rhyvex</h1>
+        <p class="username" id="usernameText">@rhyvex7</p>
+        <div class="separator"></div>
+        <p class="bio" id="bioText">lost in my own thoughts,<br>somewhere between silence and music.</p>
+
+        <div class="socials">
+            <a href="https://open.spotify.com/user/31tq3s7pozdjuepwppp7pjaxly6m" target="_blank" class="social">
+                <i class="fa-brands fa-spotify"></i>
+            </a>
+            <a href="https://www.instagram.com/rhyvex7/" target="_blank" class="social">
+                <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a href="https://www.tiktok.com/@brandtclean9" target="_blank" class="social">
+                <i class="fa-brands fa-tiktok"></i>
+            </a>
+        </div>
+
+        <div class="bottom-text">
+            <span class="typing-text">stay a little longer</span>
+            <span class="cursor-blink">_</span>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
